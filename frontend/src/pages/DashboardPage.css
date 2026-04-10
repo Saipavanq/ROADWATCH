@@ -1,0 +1,65 @@
+.dashboard { max-width: 1200px; margin: 0 auto; padding-bottom: var(--space-12); }
+.dashboard__header { margin-bottom: var(--space-8); }
+
+/* Stat Cards */
+.dashboard__stat-card { transition: var(--transition); }
+.dashboard__stat-card:hover { transform: translateY(-2px); }
+.dashboard__stat-icon {
+  width: 52px; height: 52px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: var(--space-4);
+}
+.dashboard__stat-value {
+  font-size: 2.4rem; font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--text-primary);
+  line-height: 1;
+}
+.dashboard__stat-label {
+  font-size: 0.85rem; color: var(--text-muted);
+  margin-top: var(--space-1); font-weight: 500;
+}
+
+/* Charts */
+.dashboard__charts { margin-bottom: var(--space-6); }
+
+.chart-tooltip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 0.85rem;
+}
+.chart-tooltip__label {
+  font-weight: 700; margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+/* Recent Issues */
+.dashboard__recent-list { display: flex; flex-direction: column; }
+.dashboard__recent-item {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-subtle);
+  text-decoration: none; transition: var(--transition);
+}
+.dashboard__recent-item:last-child { border-bottom: none; }
+.dashboard__recent-item:hover { background: var(--bg-elevated); }
+.dashboard__recent-icon {
+  font-size: 1.4rem; flex-shrink: 0;
+  width: 40px; height: 40px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+}
+.dashboard__recent-info { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.dashboard__recent-title {
+  font-weight: 600; font-size: 0.9rem; color: var(--text-primary);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  text-transform: capitalize;
+}
+.dashboard__recent-loc {
+  font-size: 0.75rem; color: var(--text-muted);
+  display: flex; align-items: center; gap: 4px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}

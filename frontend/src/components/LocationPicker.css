@@ -1,0 +1,17 @@
+.location-picker { display: flex; flex-direction: column; gap: var(--space-3); }
+.location-picker__controls {
+  display: flex; align-items: center; gap: var(--space-4); flex-wrap: wrap;
+}
+.location-picker__coords {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: 0.8rem; color: var(--text-muted); font-family: monospace;
+}
+.location-picker__accuracy { color: var(--secondary); font-size: 0.75rem; }
+.location-picker__map { border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); }
+.location-picker__hint {
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.8rem; color: var(--text-muted);
+  background: var(--bg-elevated);
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
