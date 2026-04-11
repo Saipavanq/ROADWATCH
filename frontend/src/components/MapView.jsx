@@ -37,6 +37,25 @@ function createSeverityIcon(severity) {
   });
 }
 
+function createProjectIcon() {
+  return L.divIcon({
+    className: '',
+    html: `<div style="
+      width:32px;height:32px;
+      background:#3B82F6;
+      border:3px solid #60A5FA;
+      border-radius:8px;
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:0 0 16px rgba(59, 130, 246, 0.6);
+      font-size:16px;
+    ">
+      🏗️
+    </div>`,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+  });
+}
+
 // Auto-fit markers
 function FitBounds({ markers }) {
   const map = useMap();
@@ -56,6 +75,7 @@ export default function MapView({
   zoom = 12,
   height = '500px',
   showFilters = false,
+  type = 'issues', // 'issues' or 'projects'
 }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selected, setSelected] = useState(null);
@@ -109,25 +129,57 @@ export default function MapView({
             <Marker
               key={marker.id}
               position={[marker.latitude, marker.longitude]}
-              icon={createSeverityIcon(marker.severity)}
+              icon={type === 'issues' ? createSeverityIcon(marker.severity) : createProjectIcon()}
               eventHandlers={{ click: () => setSelected(marker) }}
             >
               <Popup>
                 <div className="mapview__popup">
-                  <div className="mapview__popup-header">
-                    <span className={`badge badge-${marker.severity}`}>{marker.severity}</span>
-                    <span className={`badge badge-${marker.status}`}>{marker.status?.replace('_',' ')}</span>
-                  </div>
-                  <h4>{marker.title || marker.issue_type?.replace('_', ' ')}</h4>
-                  {marker.reference_no && (
-                    <p className="mapview__popup-ref">{marker.reference_no}</p>
+                  {type === 'issues' ? (
+                    <>
+                      <div className="mapview__popup-header">
+                        <span className={`badge badge-${marker.severity}`}>{marker.severity}</span>
+                        <span className={`badge badge-${marker.status}`}>{marker.status?.replace('_',' ')}</span>
+                      </div>
+                      <h4>{marker.title || marker.issue_type?.replace('_', ' ')}</h4>
+                      {marker.reference_no && (
+                        <p className="mapview__popup-ref">{marker.reference_no}</p>
+                      )}
+                      {marker.thumbnail && (
+                        <img src={marker.thumbnail} alt="" className="mapview__popup-img" />
+                      )}
+                      <Link to={`/complaint/${marker.id}`} className="btn btn-primary btn-sm btn-full">
+                        View Details →
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="mapview__popup-header">
+                        <span className="badge badge-assigned">CONSTRUCTION</span>
+                        <span className="badge badge-status" style={{ background: '#3B82F6' }}>
+                          FY {marker.fiscal_year}
+                        </span>
+                      </div>
+                      <h4>{marker.title || 'Road Repair'}</h4>
+                      <p className="mapview__popup-ref">{marker.reference_no}</p>
+                      
+                      <div className="project-details">
+                        <div className="project-detail-row">
+                          <span className="label">Contractor:</span>
+                          <span className="value">{marker.contractor_name}</span>
+                        </div>
+                        <div className="project-detail-row">
+                          <span className="label">Budget Used:</span>
+                          <span className="value highlight">₹{Number(marker.spent_amount).toLocaleString()}</span>
+                        </div>
+                        <div className="project-detail-row">
+                          <span className="label">Rating:</span>
+                          <span className="value">⭐ {marker.contractor_rating}/5.0</span>
+                        </div>
+                      </div>
+                      
+                      <p className="project-desc">{marker.project_description}</p>
+                    </>
                   )}
-                  {marker.thumbnail && (
-                    <img src={marker.thumbnail} alt="" className="mapview__popup-img" />
-                  )}
-                  <Link to={`/complaint/${marker.id}`} className="btn btn-primary btn-sm btn-full">
-                    View Details →
-                  </Link>
                 </div>
               </Popup>
             </Marker>

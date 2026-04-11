@@ -37,28 +37,7 @@
 .login-page__stat-val  { font-size: 1.8rem; font-weight: 800; color: var(--text-primary); font-family: var(--font-display); }
 .login-page__stat-label{ font-size: 0.8rem; color: var(--text-muted); }
 
-/* Orbs */
-.login-page__hero-bg { position: absolute; inset: 0; }
-.login-page__orb {
-  position: absolute; border-radius: 50%;
-  filter: blur(80px); opacity: 0.15;
-}
-.login-page__orb--1 {
-  width: 500px; height: 500px;
-  background: var(--primary);
-  top: -200px; left: -150px;
-  animation: float-orb 8s ease-in-out infinite;
-}
-.login-page__orb--2 {
-  width: 350px; height: 350px;
-  background: var(--secondary);
-  bottom: -100px; right: -80px;
-  animation: float-orb 10s ease-in-out infinite reverse;
-}
-@keyframes float-orb {
-  0%,100% { transform: translate(0,0); }
-  50%      { transform: translate(30px, -30px); }
-}
+/* No longer using static orbs, replaced by AnimatedRoadScene */
 
 /* Form panel (right) */
 .login-page__form-panel {
@@ -93,6 +72,41 @@
   color: #fff;
   background: var(--primary);
   box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+/* Role Switch */
+.login-page__role-switch {
+  margin-bottom: var(--space-6);
+  display: flex;
+  justify-content: center;
+}
+.role-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(0, 229, 255, 0.1);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+.role-link:hover {
+  background: rgba(0, 229, 255, 0.2);
+  border-color: rgba(0, 229, 255, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);
+}
+.role-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+.role-action {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #00e5ff; /* distinguishing citizen link with cyan color */
 }
 
 /* Form */

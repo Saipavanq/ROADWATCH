@@ -10,12 +10,19 @@ const useAuthStore = create(
       refreshToken: null,
       isLoading: false,
       error: null,
+      awaitingOtp: false,
+      tempUserId: null,
 
       // ── Actions ──────────────────────────────────────────
       register: async (name, email, password, phone) => {
         set({ isLoading: true, error: null });
         try {
           const { data } = await api.post('/auth/register', { name, email, password, phone });
+          if (data.data.requiresOtp) {
+            set({ awaitingOtp: true, tempUserId: data.data.userId, isLoading: false });
+            return { requiresOtp: true };
+          }
+          // Fallback (e.g. if we disable OTP later)
           const { user, accessToken, refreshToken } = data.data;
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           set({ user, accessToken, refreshToken, isLoading: false });
@@ -31,6 +38,10 @@ const useAuthStore = create(
         set({ isLoading: true, error: null });
         try {
           const { data } = await api.post('/auth/login', { email, password });
+          if (data.data.requiresOtp) {
+            set({ awaitingOtp: true, tempUserId: data.data.userId, isLoading: false });
+            return { requiresOtp: true };
+          }
           const { user, accessToken, refreshToken } = data.data;
           api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
           set({ user, accessToken, refreshToken, isLoading: false });
@@ -41,7 +52,23 @@ const useAuthStore = create(
           return { success: false, message: msg };
         }
       },
-
+      verifyOtp: async (userId, otp) => {
+        set({ isLoading: true, error: null });
+        try {
+          const { data } = await api.post('/auth/verify-otp', { userId, otp });
+          const { user, accessToken, refreshToken } = data.data;
+          api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+          set({ 
+            user, accessToken, refreshToken, 
+            isLoading: false, awaitingOtp: false, tempUserId: null 
+          });
+          return { success: true };
+        } catch (err) {
+          const msg = err.response?.data?.message || 'Invalid OTP segment';
+          set({ error: msg, isLoading: false });
+          return { success: false, message: msg };
+        }
+      },
       guestLogin: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -67,6 +94,7 @@ const useAuthStore = create(
       },
 
       clearError: () => set({ error: null }),
+      cancelOtp: () => set({ awaitingOtp: false, tempUserId: null, error: null }),
 
       isAuthenticated: () => !!get().user && !!get().accessToken,
       isGuest: () => get().user?.is_guest === true,

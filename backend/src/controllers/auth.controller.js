@@ -28,22 +28,31 @@ exports.register = async (req, res, next) => {
 
     const password_hash = await bcrypt.hash(password, 12);
     const { rows } = await query(
-      `INSERT INTO users (name, email, password_hash, phone, role)
-       VALUES ($1, $2, $3, $4, 'citizen') RETURNING id, name, email, role, created_at`,
+      `INSERT INTO users (name, email, password_hash, phone, role, is_verified)
+       VALUES ($1, $2, $3, $4, 'citizen', FALSE) RETURNING id, name, email, role, created_at`,
       [name, email, password_hash, phone || null]
     );
     const user = rows[0];
 
-    const accessToken  = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user.id);
-    const expiresAt    = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    // Generate OTP
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     await query(
-      'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
-      [user.id, refreshToken, expiresAt]
+      'UPDATE users SET otp_code = $1, otp_expires_at = $2 WHERE id = $3',
+      [otpCode, otpExpires, user.id]
     );
 
-    res.status(201).json({ success: true, message: 'Account created successfully', data: { user, accessToken, refreshToken } });
+    // MOCK SEND OTP - PRINT TO CONSOLE
+    console.log(`\n========================================`);
+    console.log(`🔑 OTP for New User ${email}: ${otpCode}`);
+    console.log(`========================================\n`);
+
+    res.status(201).json({ 
+      success: true, 
+      message: 'Account created. OTP sent to email.', 
+      data: { requiresOtp: true, userId: user.id } 
+    });
   } catch (err) { next(err); }
 };
 
@@ -55,7 +64,7 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
 
     const { rows } = await query(
-      'SELECT id, name, email, role, password_hash, is_active FROM users WHERE email = $1 AND is_guest = FALSE',
+      'SELECT id, name, email, role, password_hash, is_active, is_verified FROM users WHERE email = $1 AND is_guest = FALSE',
       [email]
     );
     if (!rows.length)
@@ -69,6 +78,7 @@ exports.login = async (req, res, next) => {
     if (!valid)
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
+    // Generate Tokens immediately (Removed OTP for login per user request)
     const accessToken  = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user.id);
     const expiresAt    = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -79,6 +89,51 @@ exports.login = async (req, res, next) => {
     );
 
     const { password_hash, ...userSafe } = user;
+    res.json({ 
+      success: true, 
+      message: 'Login successful', 
+      data: { user: userSafe, accessToken, refreshToken, requiresOtp: false } 
+    });
+  } catch (err) { next(err); }
+};
+
+// ── Verify OTP ────────────────────────────────────────────────
+exports.verifyOtp = async (req, res, next) => {
+  try {
+    const { userId, otp } = req.body;
+    if (!userId || !otp)
+      return res.status(400).json({ success: false, message: 'User ID and OTP are required' });
+
+    const { rows } = await query(
+      'SELECT id, name, email, role, otp_code, otp_expires_at FROM users WHERE id = $1',
+      [userId]
+    );
+    if (!rows.length)
+      return res.status(404).json({ success: false, message: 'User not found' });
+
+    const user = rows[0];
+    if (user.otp_code !== otp)
+      return res.status(401).json({ success: false, message: 'Invalid OTP code' });
+    
+    if (new Date() > new Date(user.otp_expires_at))
+      return res.status(401).json({ success: false, message: 'OTP has expired' });
+
+    // Mark as verified and clear OTP
+    await query(
+      'UPDATE users SET is_verified = TRUE, otp_code = NULL, otp_expires_at = NULL WHERE id = $1',
+      [user.id]
+    );
+
+    const accessToken  = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user.id);
+    const expiresAt    = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+    await query(
+      'INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+      [user.id, refreshToken, expiresAt]
+    );
+
+    const { otp_code, otp_expires_at, ...userSafe } = user;
     res.json({ success: true, message: 'Login successful', data: { user: userSafe, accessToken, refreshToken } });
   } catch (err) { next(err); }
 };

@@ -67,4 +67,30 @@ router.get('/clusters', cache(1), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// GET /api/map/projects — construction spending by location
+router.get('/projects', async (req, res, next) => {
+  try {
+    const { rows } = await query(
+      `SELECT 
+        c.id, 
+        c.reference_no, 
+        c.latitude, 
+        c.longitude, 
+        c.title,
+        ctr.name as contractor_name,
+        ctr.rating as contractor_rating,
+        bt.amount as spent_amount,
+        bt.description as project_description,
+        ba.fiscal_year
+      FROM budget_transactions bt
+      JOIN complaints c ON bt.complaint_id = c.id
+      JOIN contractors ctr ON bt.contractor_id = ctr.id
+      JOIN budget_allocations ba ON bt.budget_allocation_id = ba.id
+      ORDER BY bt.transacted_at DESC
+      LIMIT 500`
+    );
+    res.json({ success: true, data: { markers: rows } });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

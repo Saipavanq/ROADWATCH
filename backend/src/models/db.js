@@ -34,6 +34,18 @@ pool.on('error',   (err) => console.error('❌ DB Pool Error:', err));
  * @param {string} text - SQL query
  * @param {Array}  params - Query parameters
  */
-const query = (text, params) => pool.query(text, params);
+const query = async (text, params) => {
+  try {
+    // console.log('🔍 Executing query:', text, params); // Too verbose?
+    const start = Date.now();
+    const res = await pool.query(text, params);
+    const duration = Date.now() - start;
+    // console.log('✅ Query took', duration, 'ms');
+    return res;
+  } catch (err) {
+    console.error('❌ Query Error:', err);
+    throw err;
+  }
+};
 
 module.exports = { query, pool };

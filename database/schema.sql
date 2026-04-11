@@ -5,7 +5,7 @@
 
 -- Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE EXTENSION IF NOT EXISTS "postgis"; -- For geo queries (optional, can comment out)
+-- CREATE EXTENSION IF NOT EXISTS "postgis"; -- For geo queries (optional, can comment out)
 
 -- ============================================================
 -- 1. USERS & AUTH (Module 1, 25)
@@ -22,6 +22,9 @@ CREATE TABLE users (
   avatar_url    TEXT,
   is_active     BOOLEAN DEFAULT TRUE,
   is_guest      BOOLEAN DEFAULT FALSE,
+  is_verified   BOOLEAN DEFAULT FALSE,
+  otp_code      VARCHAR(6),
+  otp_expires_at TIMESTAMPTZ,
   created_at    TIMESTAMPTZ DEFAULT NOW(),
   updated_at    TIMESTAMPTZ DEFAULT NOW()
 );

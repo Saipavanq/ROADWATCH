@@ -29,7 +29,23 @@ const io     = new Server(server, {
 
 // ── Middleware ──────────────────────────────────────────────
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173', credentials: true }));
+const allowedOrigins = [
+  'http://localhost',
+  'http://localhost:5173',
+  'http://localhost:5174',
+  process.env.CLIENT_URL
+].filter(Boolean);
+
+app.use(cors({ 
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true 
+}));
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
@@ -79,7 +95,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.message);
+  console.error('❌ Error details:', err); // Log full error object
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal server error',

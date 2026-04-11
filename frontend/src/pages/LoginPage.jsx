@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { MapPin, Mail, Lock, User, Phone, Eye, EyeOff, ArrowRight, Zap, AlertCircle } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import AnimatedRoadScene from '../components/AnimatedRoadScene';
 import './LoginPage.css';
 
 export default function LoginPage() {
   const [tab, setTab]           = useState('login'); // 'login' | 'register'
   const [showPass, setShowPass]  = useState(false);
   const [form, setForm]          = useState({ name: '', email: '', password: '', phone: '' });
-  const { login, register, guestLogin, isLoading, error, clearError } = useAuthStore();
+  const [otp, setOtp]            = useState('');
+  
+  const { 
+    login, register, guestLogin, 
+    verifyOtp, awaitingOtp, tempUserId, cancelOtp,
+    isLoading, error, clearError 
+  } = useAuthStore();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,6 +31,13 @@ export default function LoginPage() {
     } else {
       result = await register(form.name, form.email, form.password, form.phone);
     }
+    // If successful and no OTP needed directly (fallback)
+    if (result.success) navigate('/');
+  };
+
+  const handleVerifyOtp = async (e) => {
+    e.preventDefault();
+    const result = await verifyOtp(tempUserId, otp);
     if (result.success) navigate('/');
   };
 
@@ -57,10 +71,7 @@ export default function LoginPage() {
             ))}
           </div>
         </div>
-        <div className="login-page__hero-bg" aria-hidden="true">
-          <div className="login-page__orb login-page__orb--1" />
-          <div className="login-page__orb login-page__orb--2" />
-        </div>
+        <AnimatedRoadScene />
       </div>
 
       {/* Right panel — Form */}
@@ -79,101 +90,149 @@ export default function LoginPage() {
             ))}
           </div>
 
+          <div className="login-page__role-switch">
+             <a href="http://localhost:5174/login" className="role-link">
+               <span className="role-text">Authority Personnel?</span>
+               <span className="role-action">Go to Authority Portal &rarr;</span>
+             </a>
+          </div>
+
           <div className="card-body">
-            <form onSubmit={handleSubmit} className="login-page__form">
-              {/* Name (register only) */}
-              {tab === 'register' && (
+            {awaitingOtp ? (
+              <form onSubmit={handleVerifyOtp} className="login-page__form animate-fadeIn">
+                <h3 style={{color: 'white', marginBottom: '10px'}}>Verify Email / Phone</h3>
+                <p style={{color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '20px'}}>
+                  Please enter the 6-digit OTP code sent to you. check console output in dev!
+                </p>
                 <div className="form-group">
-                  <label className="form-label">Full Name</label>
                   <div className="login-page__input-wrap">
-                    <User size={16} className="login-page__input-icon" />
+                    <Lock size={16} className="login-page__input-icon" />
                     <input
-                      id="name" name="name" type="text" required
+                      id="otp" name="otp" type="text" maxLength="6" required
                       className="form-input login-page__input"
-                      placeholder="Your full name"
-                      value={form.name} onChange={handleChange}
+                      placeholder="6-digit code"
+                      value={otp} onChange={(e) => setOtp(e.target.value)}
+                      style={{ letterSpacing: '4px', fontSize: '1.2rem', textAlign: 'center' }}
                     />
                   </div>
                 </div>
-              )}
 
-              {/* Email */}
-              <div className="form-group">
-                <label className="form-label">Email Address</label>
-                <div className="login-page__input-wrap">
-                  <Mail size={16} className="login-page__input-icon" />
-                  <input
-                    id="email" name="email" type="email" required
-                    className="form-input login-page__input"
-                    placeholder="you@email.com"
-                    value={form.email} onChange={handleChange}
-                  />
-                </div>
-              </div>
+                {error && (
+                  <div className="login-page__error animate-fadeIn">
+                    <AlertCircle size={16} />
+                    {error}
+                  </div>
+                )}
 
-              {/* Phone (register only) */}
-              {tab === 'register' && (
+                <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={isLoading || otp.length < 6}>
+                  {isLoading ? <div className="spinner spinner-sm" /> : null}
+                  Verify OTP
+                  {!isLoading && <ArrowRight size={16} />}
+                </button>
+
+                <button type="button" className="btn btn-secondary btn-full" onClick={cancelOtp} style={{marginTop: '10px'}}>
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="login-page__form">
+                {/* Name (register only) */}
+                {tab === 'register' && (
+                  <div className="form-group">
+                    <label className="form-label">Full Name</label>
+                    <div className="login-page__input-wrap">
+                      <User size={16} className="login-page__input-icon" />
+                      <input
+                        id="name" name="name" type="text" required
+                        className="form-input login-page__input"
+                        placeholder="Your full name"
+                        value={form.name} onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Email */}
                 <div className="form-group">
-                  <label className="form-label">Phone (optional)</label>
+                  <label className="form-label">Email Address</label>
                   <div className="login-page__input-wrap">
-                    <Phone size={16} className="login-page__input-icon" />
+                    <Mail size={16} className="login-page__input-icon" />
                     <input
-                      id="phone" name="phone" type="tel"
+                      id="email" name="email" type="email" required
                       className="form-input login-page__input"
-                      placeholder="+91 XXXXX XXXXX"
-                      value={form.phone} onChange={handleChange}
+                      placeholder="you@email.com"
+                      value={form.email} onChange={handleChange}
                     />
                   </div>
                 </div>
-              )}
 
-              {/* Password */}
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <div className="login-page__input-wrap">
-                  <Lock size={16} className="login-page__input-icon" />
-                  <input
-                    id="password" name="password"
-                    type={showPass ? 'text' : 'password'} required
-                    className="form-input login-page__input"
-                    placeholder={tab === 'register' ? 'Min. 8 characters' : 'Your password'}
-                    value={form.password} onChange={handleChange}
-                  />
-                  <button type="button" className="login-page__pass-toggle" onClick={() => setShowPass(!showPass)}>
-                    {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                {/* Phone (register only) */}
+                {tab === 'register' && (
+                  <div className="form-group">
+                    <label className="form-label">Phone (optional)</label>
+                    <div className="login-page__input-wrap">
+                      <Phone size={16} className="login-page__input-icon" />
+                      <input
+                        id="phone" name="phone" type="tel"
+                        className="form-input login-page__input"
+                        placeholder="+91 XXXXX XXXXX"
+                        value={form.phone} onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Password */}
+                <div className="form-group">
+                  <label className="form-label">Password</label>
+                  <div className="login-page__input-wrap">
+                    <Lock size={16} className="login-page__input-icon" />
+                    <input
+                      id="password" name="password"
+                      type={showPass ? 'text' : 'password'} required
+                      className="form-input login-page__input"
+                      placeholder={tab === 'register' ? 'Min. 8 characters' : 'Your password'}
+                      value={form.password} onChange={handleChange}
+                    />
+                    <button type="button" className="login-page__pass-toggle" onClick={() => setShowPass(!showPass)}>
+                      {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Error */}
-              {error && (
-                <div className="login-page__error animate-fadeIn">
-                  <AlertCircle size={16} />
-                  {error}
+                {/* Error */}
+                {error && (
+                  <div className="login-page__error animate-fadeIn">
+                    <AlertCircle size={16} />
+                    {error}
+                  </div>
+                )}
+
+                {/* Submit */}
+                <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={isLoading}>
+                  {isLoading ? <div className="spinner spinner-sm" /> : null}
+                  {tab === 'login' ? 'Sign In' : 'Create Account'}
+                  {!isLoading && <ArrowRight size={16} />}
+                </button>
+              </form>
+            )}
+
+            {!awaitingOtp && (
+              <>
+                <div className="login-page__divider">
+                  <hr /> <span>or</span> <hr />
                 </div>
-              )}
 
-              {/* Submit */}
-              <button type="submit" className="btn btn-primary btn-full btn-lg" disabled={isLoading}>
-                {isLoading ? <div className="spinner spinner-sm" /> : null}
-                {tab === 'login' ? 'Sign In' : 'Create Account'}
-                {!isLoading && <ArrowRight size={16} />}
-              </button>
-            </form>
+                <button className="btn btn-secondary btn-full" onClick={handleGuest} disabled={isLoading}>
+                  <Zap size={16} />
+                  Continue as Guest
+                </button>
 
-            <div className="login-page__divider">
-              <hr /> <span>or</span> <hr />
-            </div>
-
-            {/* Guest */}
-            <button className="btn btn-secondary btn-full" onClick={handleGuest} disabled={isLoading}>
-              <Zap size={16} />
-              Continue as Guest
-            </button>
-
-            <p className="login-page__guest-note">
-              Guest accounts can submit reports without registration
-            </p>
+                <p className="login-page__guest-note">
+                  Guest accounts can submit reports without registration
+                </p>
+              </>
+            )}
           </div>
         </div>
       </div>
