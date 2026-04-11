@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { MapPin, Bell, User, Menu, X, LogOut, ChevronDown, Zap } from 'lucide-react';
 import useAuthStore from '../store/authStore';
+import NotificationTray from './NotificationTray';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -27,9 +28,6 @@ export default function Navbar() {
     { to: '/report',    label: 'Report Issue' },
     { to: '/status',    label: 'My Reports' },
     { to: '/dashboard', label: 'Dashboard' },
-    ...(user?.role === 'authority' || user?.role === 'admin'
-      ? [{ to: '/authority', label: '🏛️ Authority' }]
-      : []),
   ];
 
   return (
@@ -65,10 +63,7 @@ export default function Navbar() {
         <div className="navbar__actions">
           {isAuthenticated() ? (
             <>
-              <button className="navbar__icon-btn" title="Notifications">
-                <Bell size={18} />
-                <span className="navbar__notif-dot" />
-              </button>
+              <NotificationTray />
 
               <div className="navbar__user-menu">
                 <button

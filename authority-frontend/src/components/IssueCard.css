@@ -1,0 +1,95 @@
+.issue-card {
+  display: flex; flex-direction: column;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.issue-card:hover {
+  border-color: rgba(255, 107, 44, 0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 20px var(--primary-glow);
+}
+
+/* Image */
+.issue-card__image {
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+.issue-card__image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.issue-card:hover .issue-card__image img { transform: scale(1.05); }
+
+.issue-card__no-image {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 3rem;
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-surface));
+}
+.issue-card__severity {
+  position: absolute; top: var(--space-3); left: var(--space-3);
+  font-size: 0.7rem;
+}
+
+/* Body */
+.issue-card__body { padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); flex: 1; }
+
+.issue-card__header {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: var(--space-2);
+}
+.issue-card__type {
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: capitalize; letter-spacing: 0.03em;
+}
+
+.issue-card__title {
+  font-size: 1rem; font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.issue-card__meta {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.issue-card__location, .issue-card__time {
+  display: flex; align-items: center; gap: var(--space-1);
+  font-size: 0.78rem; color: var(--text-muted);
+}
+.issue-card__location {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.issue-card__footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: auto;
+}
+.issue-card__ref { font-size: 0.75rem; color: var(--text-muted); font-family: monospace; }
+.issue-card__upvotes {
+  display: flex; align-items: center; gap: var(--space-1);
+  font-size: 0.8rem; color: var(--text-secondary);
+}
+.issue-card__arrow { color: var(--text-muted); transition: transform 0.2s; }
+.issue-card:hover .issue-card__arrow { transform: translateX(3px); color: var(--primary); }
+
+/* Compact variant */
+.issue-card--compact .issue-card__image { height: 100px; }
+.issue-card--compact .issue-card__body  { padding: var(--space-3); }
+.issue-card--compact .issue-card__title { font-size: 0.9rem; }

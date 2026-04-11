@@ -1,0 +1,114 @@
+.notif-tray {
+  position: relative;
+}
+
+.notif-tray__btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.notif-tray__btn:hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-primary);
+}
+
+.notif-tray__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #EF4444;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  line-height: 1;
+}
+
+.notif-tray__dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 320px;
+  background: rgba(28, 31, 40, 0.95);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  margin-top: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.notif-tray__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.notif-tray__header h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.notif-tray__list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.notif-tray__empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.notif-tray__item {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+
+.notif-tray__item.unread {
+  background: rgba(255, 107, 44, 0.05);
+  border-left: 3px solid var(--primary);
+}
+
+.notif-tray__item:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+.notif-tray__item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.notif-tray__item-header strong {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.notif-tray__time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.notif-tray__item p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}

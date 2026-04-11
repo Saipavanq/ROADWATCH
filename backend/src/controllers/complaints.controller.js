@@ -21,9 +21,11 @@ const checkDuplicate = async (lat, lng, issueType) => {
   const { rows } = await query(
     `SELECT id, reference_no FROM complaints
      WHERE issue_type = $1
-       AND status NOT IN ('rejected', 'resolved')
+       AND (status = 'submitted' OR status = 'under_review' OR status = 'in_progress')
+       AND created_at > NOW() - INTERVAL '14 days'
        AND ABS(latitude - $2) < 0.0005
        AND ABS(longitude - $3) < 0.0005
+     ORDER BY created_at DESC
      LIMIT 1`,
     [issueType, lat, lng]
   );
@@ -51,15 +53,12 @@ exports.createComplaint = async (req, res, next) => {
     if (!latitude || !longitude)
       return res.status(400).json({ success: false, message: 'Location (lat/lng) is required' });
 
-    // Duplicate detection (Module 9)
+    let parentComplaintId = null;
     const duplicate = await checkDuplicate(parseFloat(latitude), parseFloat(longitude), issue_type);
     if (duplicate) {
-      return res.status(200).json({
-        success: true,
-        isDuplicate: true,
-        message: `A similar issue already exists nearby (${duplicate.reference_no})`,
-        data: { parentComplaintId: duplicate.id, referenceNo: duplicate.reference_no },
-      });
+      parentComplaintId = duplicate.id;
+      // Auto-upvote the parent
+      await query('UPDATE complaints SET upvotes = upvotes + 1 WHERE id = $1', [duplicate.id]);
     }
 
     const referenceNo = await generateRefNo();
@@ -69,8 +68,9 @@ exports.createComplaint = async (req, res, next) => {
     const { rows } = await query(
       `INSERT INTO complaints
          (reference_no, user_id, latitude, longitude, address_text,
-          issue_type, severity, title, description, authority_area_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          issue_type, severity, title, description, authority_area_id, 
+          is_duplicate, parent_complaint_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
       [
         referenceNo, userId || null,
@@ -78,6 +78,7 @@ exports.createComplaint = async (req, res, next) => {
         address_text || null, issue_type, severity,
         title || `${issue_type} reported`, description || null,
         authorityAreaId,
+        !!parentComplaintId, parentComplaintId
       ]
     );
     const complaint = rows[0];

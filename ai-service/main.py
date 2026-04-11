@@ -47,6 +47,18 @@ class HealthResponse(BaseModel):
     service: str
     version: str
 
+class PredictRequest(BaseModel):
+    current_health_score: float
+    last_repair_age_days: int
+    traffic_volume: str = "medium" # low, medium, high
+
+class PredictResponse(BaseModel):
+    predicted_health_score_30d: float
+    predicted_health_score_90d: float
+    predicted_health_score_365d: float
+    risk_level: str
+    maintenance_recommended_in_days: int
+
 # ── Issue Types & Severity Logic ──────────────────────────────
 ISSUE_TYPES    = ["pothole", "crack", "waterlogging", "broken_divider", "missing_signage", "other"]
 ISSUE_WEIGHTS  = [0.40, 0.25, 0.15, 0.08, 0.07, 0.05]
@@ -137,6 +149,52 @@ def analyze_image(request: AnalyzeRequest):
         confidence=confidence,
         notes=notes,
         processing_time_ms=processing_time_ms,
+    )
+
+
+@app.post("/predict_degradation", response_model=PredictResponse)
+def predict_degradation(request: PredictRequest):
+    """
+    Module 18: Predictive Analytics
+    Predicts future road health score based on current age, traffic, and health.
+    """
+    traffic_multiplier = {
+        "low": 0.8,
+        "medium": 1.0,
+        "high": 1.4
+    }.get(request.traffic_volume.lower(), 1.0)
+    
+    # Heuristic: base degradation per day is 0.05 points on a 1-100 scale.
+    # It accelerates as the road gets older.
+    age_factor = 1.0 + (request.last_repair_age_days / 1000.0) 
+    daily_deg = 0.05 * traffic_multiplier * age_factor
+
+    score_30 = max(0.0, request.current_health_score - (daily_deg * 30))
+    score_90 = max(0.0, request.current_health_score - (daily_deg * 90))
+    score_365 = max(0.0, request.current_health_score - (daily_deg * 365))
+
+    if score_90 < 30.0:
+        risk = "Critical"
+    elif score_90 < 60.0:
+        risk = "High"
+    elif score_90 < 80.0:
+        risk = "Medium"
+    else:
+        risk = "Low"
+
+    # Days until score hits 50 (threshold for maintenance)
+    if request.current_health_score > 50:
+        delta = request.current_health_score - 50
+        days_to_repair = int(delta / daily_deg)
+    else:
+        days_to_repair = 0
+
+    return PredictResponse(
+        predicted_health_score_30d=round(score_30, 2),
+        predicted_health_score_90d=round(score_90, 2),
+        predicted_health_score_365d=round(score_365, 2),
+        risk_level=risk,
+        maintenance_recommended_in_days=days_to_repair
     )
 
 

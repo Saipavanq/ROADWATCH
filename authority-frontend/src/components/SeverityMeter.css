@@ -1,0 +1,16 @@
+.severity-meter { display: flex; flex-direction: column; gap: var(--space-2); }
+.severity-meter__labels { display: flex; align-items: center; justify-content: space-between; }
+.severity-meter__label  { font-size: 0.85rem; font-weight: 600; }
+.severity-meter__desc   { font-size: 0.75rem; color: var(--text-muted); }
+.severity-meter__bar-track {
+  height: 6px; background: var(--bg-elevated);
+  border-radius: 3px; overflow: hidden;
+}
+.severity-meter__bar-fill {
+  height: 100%; border-radius: 3px;
+  transition: width 0.8s ease;
+  box-shadow: 0 0 8px currentColor;
+}
+.severity-meter--compact { flex-direction: row; align-items: center; gap: var(--space-2); }
+.severity-meter--compact .severity-meter__bar-track { flex: 1; height: 4px; }
+.severity-meter__compact-label { font-size: 0.75rem; font-weight: 600; flex-shrink: 0; }

@@ -17,6 +17,8 @@ const issuesRoutes     = require('./src/routes/issues.routes');
 const mapRoutes        = require('./src/routes/map.routes');
 const authorityRoutes  = require('./src/routes/authority.routes');
 const roadsRoutes      = require('./src/routes/roads.routes');
+const budgetRoutes     = require('./src/routes/budget.routes');
+const contractorsRoutes = require('./src/routes/contractors.routes');
 const { autoEscalateStalledComplaints } = require('./src/controllers/authority.controller');
 
 const app    = express();
@@ -63,6 +65,8 @@ app.use('/api/issues',     issuesRoutes);
 app.use('/api/map',        mapRoutes);
 app.use('/api/authority',  authorityRoutes);
 app.use('/api/roads',      roadsRoutes);
+app.use('/api/budget',     budgetRoutes);
+app.use('/api/contractors', contractorsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

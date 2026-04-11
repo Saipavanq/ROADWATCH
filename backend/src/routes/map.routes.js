@@ -4,9 +4,10 @@
 const express = require('express');
 const router  = express.Router();
 const { query } = require('../models/db');
+const cache = require('../middleware/cache');
 
 // GET /api/map/heatmap — complaint coordinates for heatmap
-router.get('/heatmap', async (req, res, next) => {
+router.get('/heatmap', cache(2), async (req, res, next) => {
   try {
     const { rows } = await query(
       `SELECT latitude, longitude, severity,
@@ -42,7 +43,7 @@ router.get('/authority-areas', async (req, res, next) => {
 });
 
 // GET /api/map/clusters — complaint clusters for map markers
-router.get('/clusters', async (req, res, next) => {
+router.get('/clusters', cache(1), async (req, res, next) => {
   try {
     const { bounds } = req.query; // "minLat,minLng,maxLat,maxLng"
     let whereClause = "WHERE status != 'rejected'";

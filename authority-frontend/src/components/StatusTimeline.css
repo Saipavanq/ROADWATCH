@@ -1,0 +1,38 @@
+.status-timeline { display: flex; flex-direction: column; gap: var(--space-4); }
+.status-timeline__title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* Steps */
+.status-timeline__steps { display: flex; align-items: flex-start; gap: 0; position: relative; }
+.status-timeline__step  { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+.status-timeline__dot {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-elevated);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+  transition: all 0.3s ease;
+}
+.status-timeline__dot.active { box-shadow: 0 0 16px currentColor; }
+.status-timeline__dot.done   { border-color: #4ADE80; background: rgba(74,222,128,0.1); }
+
+.status-timeline__step-label {
+  font-size: 0.7rem; font-weight: 500; margin-top: var(--space-2);
+  text-align: center; line-height: 1.2; max-width: 64px;
+}
+.status-timeline__connector {
+  position: absolute; top: 18px; left: 50%; right: -50%;
+  height: 2px; background: var(--border); z-index: 1;
+  transform: translateX(50%);
+}
+.status-timeline__connector.done { background: #4ADE80; }
+
+/* History */
+.status-timeline__history { display: flex; flex-direction: column; gap: var(--space-3); padding-top: var(--space-2); border-top: 1px solid var(--border); }
+.status-timeline__history-title { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-2); }
+.status-timeline__entry { display: flex; gap: var(--space-3); align-items: flex-start; }
+.status-timeline__entry-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+.status-timeline__entry-content { display: flex; flex-direction: column; gap: 2px; }
+.status-timeline__entry-status  { font-size: 0.85rem; font-weight: 600; }
+.status-timeline__entry-notes   { font-size: 0.8rem; color: var(--text-secondary); }
+.status-timeline__entry-time    { font-size: 0.75rem; color: var(--text-muted); }

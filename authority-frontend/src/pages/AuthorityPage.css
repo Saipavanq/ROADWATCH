@@ -1,0 +1,279 @@
+/* ============================================================
+   AuthorityPage.css — Phase 2
+   Authority dashboard styles
+   ============================================================ */
+
+.authority-page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 6rem 1.5rem 3rem;
+}
+
+.authority-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* ── Page Header ─────────────────────────────────────────────── */
+
+.authority-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.authority-page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.authority-page-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+.authority-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: var(--primary);
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* ── Stat Cards Row ──────────────────────────────────────────── */
+
+.authority-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 1000px) {
+  .authority-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .authority-stats-grid { grid-template-columns: 1fr; }
+}
+
+.authority-stat-card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.authority-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 1.1rem 1.1rem 0 0;
+}
+
+.authority-stat-card.pending::before    { background: linear-gradient(90deg, var(--primary), #8b5cf6); }
+.authority-stat-card.escalated::before  { background: linear-gradient(90deg, #f59e0b, #ef4444); }
+.authority-stat-card.critical::before   { background: linear-gradient(90deg, #ef4444, #dc2626); }
+.authority-stat-card.resolved::before   { background: linear-gradient(90deg, #22c55e, #16a34a); }
+
+.authority-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.authority-stat-icon {
+  font-size: 1.5rem;
+}
+
+.authority-stat-value {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.authority-stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+
+.authority-tabs {
+  display: flex;
+  gap: 0.3rem;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 0.35rem;
+  overflow-x: auto;
+}
+
+.authority-tab {
+  flex-shrink: 0;
+  padding: 0.65rem 1.25rem;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: inherit;
+}
+
+.authority-tab.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.35);
+}
+
+.authority-tab:hover:not(.active) {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+/* ── Tab Content ─────────────────────────────────────────────── */
+
+.authority-tab-content {
+  animation: fadeInUp 0.2s ease;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Recent Activity ─────────────────────────────────────────── */
+
+.authority-activity {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 1.1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.authority-activity-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.activity-item:last-child {
+  border-bottom: none;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--primary);
+}
+
+.activity-text {
+  flex: 1;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.activity-text strong {
+  color: var(--primary);
+}
+
+.activity-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* ── Loading State ─────────────────────────────────────────────── */
+
+.authority-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 1rem;
+  color: var(--text-muted);
+}
+
+.authority-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Access Denied ─────────────────────────────────────────────── */
+
+.authority-denied {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.authority-denied-icon {
+  font-size: 4rem;
+}
+
+.authority-denied-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}

@@ -5,7 +5,6 @@ import ReportPage    from './pages/ReportPage';
 import StatusPage    from './pages/StatusPage';
 import MapPage       from './pages/MapPage';
 import DashboardPage from './pages/DashboardPage';
-import AuthorityPage from './pages/AuthorityPage';
 import useAuthStore  from './store/authStore';
 
 // Protected route wrapper
@@ -35,8 +34,7 @@ export default function App() {
         <Route path="/dashboard" element={<Protected><DashboardPage /></Protected>} />
         <Route path="/complaint/:id" element={<Protected><StatusPage /></Protected>} />
 
-        {/* Authority / Admin dashboard */}
-        <Route path="/authority" element={<Protected><AuthorityPage /></Protected>} />
+        {/* Authority route removed to separate frontend */}
 
         {/* 404 fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

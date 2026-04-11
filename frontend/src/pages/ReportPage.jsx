@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, AlertTriangle, MapPin, Camera, ChevronRight, ChevronLeft } from 'lucide-react';
+import { CheckCircle, AlertTriangle, MapPin, Camera, ChevronRight, ChevronLeft, Mic, MicOff } from 'lucide-react';
 import CameraCapture from '../components/CameraCapture';
 import LocationPicker from '../components/LocationPicker';
 import useComplaintsStore from '../store/complaintsStore';
@@ -40,6 +40,35 @@ export default function ReportPage() {
   const [form, setForm] = useState({
     issue_type: '', severity: 'medium', title: '', description: '',
   });
+  const [isListening, setIsListening] = useState(false);
+
+  // Module 23: Voice Input
+  const toggleListening = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Your browser does not support Voice Input.");
+      return;
+    }
+    if (isListening) return; // cannot stop manually easily without keeping ref, but it auto-stops
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setForm((f) => ({ 
+        ...f, 
+        description: f.description ? `${f.description} ${transcript}` : transcript 
+      }));
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    
+    recognition.start();
+  };
 
   const handleNext = () => {
     if (step === 1 && !location) { setError('Please select a location'); return; }
@@ -224,7 +253,17 @@ export default function ReportPage() {
 
                 {/* Description */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="description">Additional Details (optional)</label>
+                  <div className="flex justify-between items-center" style={{ marginBottom: '8px' }}>
+                    <label className="form-label" htmlFor="description">Additional Details (optional)</label>
+                    <button 
+                      type="button" 
+                      onClick={toggleListening} 
+                      className={`btn btn-sm ${isListening ? 'btn-danger' : 'btn-secondary'}`}
+                    >
+                      {isListening ? <MicOff size={14}/> : <Mic size={14}/>}
+                      {isListening ? 'Listening...' : 'Dictate'}
+                    </button>
+                  </div>
                   <textarea
                     id="description"
                     className="form-textarea"

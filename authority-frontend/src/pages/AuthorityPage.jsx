@@ -11,6 +11,8 @@ import useAuthorityStore from '../store/authorityStore';
 import ComplaintQueue from '../components/ComplaintQueue';
 import RoadHealthPanel from '../components/RoadHealthPanel';
 import MapView from '../components/MapView';
+import BudgetPanel from '../components/BudgetPanel';
+import ContractorsPanel from '../components/ContractorsPanel';
 import './AuthorityPage.css';
 
 const tabs = [
@@ -18,6 +20,8 @@ const tabs = [
   { id: 'complaints', label: '📋 Complaints' },
   { id: 'road-health',label: '🛣️ Road Health' },
   { id: 'map',        label: '🗺️ Live Map' },
+  { id: 'budget',     label: '💰 Budget' },
+  { id: 'contractors',label: '👷 Contractors' },
 ];
 
 const formatRelative = (iso) => {
@@ -36,6 +40,10 @@ export default function AuthorityPage() {
   const { dashboard, loading, fetchDashboard } = useAuthorityStore();
   const [activeTab, setActiveTab] = useState('overview');
 
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
+
   // Guard: only authority or admin
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user?.role !== 'authority' && user?.role !== 'admin') {
@@ -50,9 +58,7 @@ export default function AuthorityPage() {
     );
   }
 
-  useEffect(() => {
-    fetchDashboard();
-  }, []);
+  // Removed useEffect from here, moved to top
 
   const stats = dashboard?.stats;
 
@@ -187,6 +193,8 @@ export default function AuthorityPage() {
 
           {activeTab === 'complaints' && <ComplaintQueue />}
           {activeTab === 'road-health' && <RoadHealthPanel />}
+          {activeTab === 'budget' && <BudgetPanel />}
+          {activeTab === 'contractors' && <ContractorsPanel />}
           {activeTab === 'map' && (
             <div style={{
               height: '600px',
