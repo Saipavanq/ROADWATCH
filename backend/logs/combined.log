@@ -1,0 +1,62 @@
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T06:24:35.312Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T06:24:35.317Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T06:24:35.318Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T06:24:35.318Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T06:36:54.518Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T06:36:54.523Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T06:36:54.523Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T06:36:54.523Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T06:54:12.400Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T06:54:12.405Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T06:54:12.405Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T06:54:12.405Z"}
+{"level":"warn","message":"No SMTP credentials provided in .env, falling back to Ethereal Email for testing","service":"roadwatch-backend","timestamp":"2026-05-20T06:55:29.096Z"}
+{"level":"info","message":"OTP Email sent successfully to mallampatisaipavan@gmail.com","service":"roadwatch-backend","timestamp":"2026-05-20T06:55:44.261Z"}
+{"level":"info","message":"Preview URL for sent email: https://ethereal.email/message/ag1a5I5FEF1TUDFEag1a8Ouu9wSVPPaoAAAAAbe-8m67kJ8mr.w3RjRZRmU","service":"roadwatch-backend","timestamp":"2026-05-20T06:55:44.261Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:14:01.218Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:14:01.223Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:14:01.223Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:14:01.223Z"}
+{"level":"info","message":"SMTP Transporter created with provided credentials","service":"roadwatch-backend","timestamp":"2026-05-20T07:15:18.060Z"}
+{"level":"info","message":"OTP Email sent successfully to mallampatisaipavan00@gmail.com","service":"roadwatch-backend","timestamp":"2026-05-20T07:15:32.791Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:32:36.897Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:32:36.901Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:32:36.902Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:32:36.902Z"}
+{"level":"info","message":"SMTP Transporter created with provided credentials","service":"roadwatch-backend","timestamp":"2026-05-20T07:35:59.235Z"}
+{"level":"info","message":"OTP Email sent successfully to mallampatisaipavan@gmail.com","service":"roadwatch-backend","timestamp":"2026-05-20T07:36:02.676Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:45:48.861Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:45:48.865Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:45:48.866Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:45:48.866Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:46:02.955Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:46:02.960Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:46:02.961Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:46:02.961Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:06.130Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:06.136Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:06.136Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:06.137Z"}
+{"level":"info","message":"SMTP Transporter created with provided credentials","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:20.833Z"}
+{"level":"info","message":"OTP Email sent successfully to citizen_resolve@test.com","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:26.406Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:49.939Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:49.943Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:49.944Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:48:49.944Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:49:34.333Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:49:34.338Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:49:34.338Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:49:34.339Z"}
+{"level":"info","message":"SMTP Transporter created with provided credentials","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:05.249Z"}
+{"level":"info","message":"OTP Email sent successfully to citizen_resolve_2@test.com","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:13.949Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:35.276Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:35.280Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:35.281Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:35.281Z"}
+{"level":"info","message":"\n🛣️  RoadWatch API running on http://localhost:5000","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:46.090Z"}
+{"level":"info","message":"📡  Socket.IO ready","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:46.094Z"}
+{"level":"info","message":"🌍  Environment: development","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:46.095Z"}
+{"level":"info","message":"⚡  Auto-escalation scheduler: every 1 hour\n","service":"roadwatch-backend","timestamp":"2026-05-20T07:50:46.095Z"}
+{"level":"info","message":"SMTP Transporter created with provided credentials","service":"roadwatch-backend","timestamp":"2026-05-20T07:51:03.247Z"}
+{"level":"info","message":"OTP Email sent successfully to citizen_resolve_3@test.com","service":"roadwatch-backend","timestamp":"2026-05-20T07:51:09.648Z"}
+{"code":"LIMIT_UNEXPECTED_FILE","field":"image","level":"error","message":"❌ Error details: Unexpected field","name":"MulterError","service":"roadwatch-backend","stack":"MulterError: Unexpected field\n    at wrappedFileFilter (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\multer\\index.js:40:19)\n    at Multipart.<anonymous> (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\multer\\lib\\make-middleware.js:109:7)\n    at Multipart.emit (node:events:518:28)\n    at HeaderParser.cb (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\busboy\\lib\\types\\multipart.js:358:14)\n    at HeaderParser.push (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\busboy\\lib\\types\\multipart.js:162:20)\n    at SBMH.ssCb [as _cb] (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\busboy\\lib\\types\\multipart.js:394:37)\n    at feed (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\streamsearch\\lib\\sbmh.js:200:10)\n    at SBMH.push (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\streamsearch\\lib\\sbmh.js:104:16)\n    at Multipart._write (C:\\Users\\malla\\Downloads\\IITM\\Code\\roadwatch\\backend\\node_modules\\busboy\\lib\\types\\multipart.js:567:19)\n    at writeOrBuffer (node:internal/streams/writable:572:12)","storageErrors":[],"timestamp":"2026-05-20T07:51:10.491Z"}

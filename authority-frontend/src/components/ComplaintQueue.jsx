@@ -187,6 +187,15 @@ export default function ComplaintQueue() {
                           ⚡ Escalate
                         </button>
                       )}
+                      {(c.status === 'assigned' || c.status === 'in_progress') && (
+                        <button
+                          className="queue-action-btn"
+                          style={{ background: 'var(--success)', color: '#fff', border: 'none', padding: '0.25rem 0.5rem', borderRadius: '0.25rem', fontSize: '0.8rem', cursor: 'pointer', marginLeft: '0.5rem' }}
+                          onClick={(e) => { e.stopPropagation(); setAssignModal({ complaint: c, mode: 'resolve' }); }}
+                        >
+                          ✅ Resolve
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

@@ -5,6 +5,8 @@ const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const { query } = require('../models/db');
+const { sendOtpEmail } = require('../services/email.service');
+const logger = require('../utils/logger');
 
 const generateAccessToken  = (user) =>
   jwt.sign({ id: user.id, email: user.email, role: user.role },
@@ -43,10 +45,15 @@ exports.register = async (req, res, next) => {
       [otpCode, otpExpires, user.id]
     );
 
-    // MOCK SEND OTP - PRINT TO CONSOLE
-    console.log(`\n========================================`);
-    console.log(`🔑 OTP for New User ${email}: ${otpCode}`);
-    console.log(`========================================\n`);
+    // Send OTP via Email
+    try {
+      await sendOtpEmail(email, otpCode);
+    } catch (emailError) {
+      // If email sending fails, we might still want to return a specific response or rollback.
+      // Since the user is created, we will just inform the client that OTP sending failed.
+      logger.error('Failed to send OTP email during registration:', emailError);
+      return res.status(500).json({ success: false, message: 'Account created, but failed to send OTP email.' });
+    }
 
     res.status(201).json({ 
       success: true, 
@@ -78,7 +85,15 @@ exports.login = async (req, res, next) => {
     if (!valid)
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
 
-    // Generate Tokens immediately (Removed OTP for login per user request)
+    if (!user.is_verified) {
+      return res.status(403).json({ 
+        success: false, 
+        message: 'Account not verified. Please verify your email with the OTP sent during registration.',
+        data: { requiresOtp: true, userId: user.id }
+      });
+    }
+
+    // Generate Tokens immediately
     const accessToken  = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user.id);
     const expiresAt    = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
@@ -206,3 +221,43 @@ exports.logout = async (req, res, next) => {
     res.json({ success: true, message: 'Logged out successfully' });
   } catch (err) { next(err); }
 };
+
+// ── Request Delete OTP ────────────────────────────────────────
+exports.requestDeleteOtp = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const userRes = await query('SELECT email FROM users WHERE id = $1', [userId]);
+    if (!userRes.rows.length) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    const email = userRes.rows[0].email;
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    
+    await query('UPDATE users SET otp_code = $1, otp_expires_at = $2 WHERE id = $3', [otpCode, otpExpires, userId]);
+    await sendOtpEmail(email, otpCode);
+    
+    res.json({ success: true, message: 'OTP sent to email for account deletion' });
+  } catch (err) { next(err); }
+};
+
+// ── Delete Account ────────────────────────────────────────────
+exports.deleteAccount = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { otp } = req.body;
+    if (!otp) return res.status(400).json({ success: false, message: 'OTP is required' });
+    
+    const { rows } = await query('SELECT otp_code, otp_expires_at FROM users WHERE id = $1', [userId]);
+    if (!rows.length) return res.status(404).json({ success: false, message: 'User not found' });
+    
+    const user = rows[0];
+    if (user.otp_code !== String(otp)) return res.status(401).json({ success: false, message: 'Invalid OTP code' });
+    if (new Date() > new Date(user.otp_expires_at)) return res.status(401).json({ success: false, message: 'OTP has expired' });
+    
+    await query('DELETE FROM refresh_tokens WHERE user_id = $1', [userId]);
+    await query('DELETE FROM users WHERE id = $1', [userId]);
+    
+    res.json({ success: true, message: 'Account deleted successfully' });
+  } catch (err) { next(err); }
+};
+

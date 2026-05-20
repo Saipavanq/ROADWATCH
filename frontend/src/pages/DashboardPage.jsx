@@ -17,15 +17,7 @@ const COLORS = {
   other:          '#94A3B8',
 };
 
-const STATUS_DATA = [
-  { name: 'Mon', reported: 12, resolved: 8 },
-  { name: 'Tue', reported: 19, resolved: 14 },
-  { name: 'Wed', reported: 8,  resolved: 11 },
-  { name: 'Thu', reported: 24, resolved: 18 },
-  { name: 'Fri', reported: 15, resolved: 12 },
-  { name: 'Sat', reported: 21, resolved: 16 },
-  { name: 'Sun', reported: 9,  resolved: 7  },
-];
+// STATUS_DATA mock removed, using real data from backend
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload?.length) {
@@ -51,6 +43,7 @@ export default function DashboardPage() {
 
   const overview = stats?.overview || {};
   const byType   = stats?.byType   || [];
+  const weeklyActivity = stats?.weeklyActivity || [];
 
   const statCards = [
     { icon: AlertTriangle, label: 'Total Reported', value: overview.total || 0,      color: 'var(--primary)', bg: 'rgba(255,107,44,0.1)' },
@@ -97,7 +90,7 @@ export default function DashboardPage() {
             </div>
             <div className="card-body">
               <ResponsiveContainer width="100%" height={240}>
-                <BarChart data={STATUS_DATA} barSize={10} barGap={4}>
+                <BarChart data={weeklyActivity.length > 0 ? weeklyActivity : [{ name: 'No data', reported: 0, resolved: 0 }]} barSize={10} barGap={4}>
                   <XAxis dataKey="name" stroke="var(--text-muted)" tick={{ fontSize: 12 }} />
                   <YAxis stroke="var(--text-muted)" tick={{ fontSize: 12 }} />
                   <Tooltip content={<CustomTooltip />} />
@@ -185,6 +178,38 @@ export default function DashboardPage() {
             {complaints.length === 0 && !isLoading && (
               <div style={{ padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)' }}>
                 No reports yet. <Link to="/report" className="text-primary">Be the first!</Link>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Recently Resolved Proofs */}
+        <div className="card" style={{ marginTop: 'var(--space-6)', borderTop: '4px solid var(--success)' }}>
+          <div className="card-header flex items-center justify-between">
+            <div>
+              <h3>Resolved Wall of Fame</h3>
+              <p className="text-sm text-muted">Proof that things are getting done</p>
+            </div>
+            <Link to="/status" className="btn btn-ghost btn-sm">View all →</Link>
+          </div>
+          <div className="grid-3" style={{ padding: 'var(--space-4)' }}>
+            {(complaints.filter(c => c.status === 'resolved' && c.resolved_image_url).slice(0, 3) || []).map((c) => (
+              <div key={`resolved-${c.id}`} className="card stagger-item" style={{ overflow: 'hidden' }}>
+                <div style={{ position: 'relative' }}>
+                  <img src={c.resolved_image_url} alt="Resolved Proof" style={{ width: '100%', height: '160px', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: 10, right: 10, background: 'var(--success)', color: '#fff', padding: '0.2rem 0.6rem', borderRadius: '1rem', fontSize: '0.75rem', fontWeight: 600 }}>
+                    Fixed
+                  </div>
+                </div>
+                <div className="card-body" style={{ padding: '1rem' }}>
+                  <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1rem' }}>{c.title || c.issue_type.replace('_',' ')}</h4>
+                  <p className="text-sm text-muted" style={{ margin: 0 }}><MapPin size={12} /> {c.address_text || 'Location Data'}</p>
+                </div>
+              </div>
+            ))}
+            {complaints.filter(c => c.status === 'resolved' && c.resolved_image_url).length === 0 && !isLoading && (
+              <div style={{ gridColumn: '1 / -1', padding: 'var(--space-8)', textAlign: 'center', color: 'var(--text-muted)' }}>
+                No visual proofs available yet.
               </div>
             )}
           </div>

@@ -90,6 +90,23 @@ const useAuthorityStore = create((set, get) => ({
     }
   },
 
+  // Resolve complaint with image
+  resolveComplaint: async (complaintId, formData) => {
+    set({ loading: true, error: null });
+    try {
+      await api.post(`/authority/complaints/${complaintId}/resolve`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      set({ loading: false });
+      await get().fetchComplaints(get().pagination.page);
+      return { success: true };
+    } catch (err) {
+      const message = err.response?.data?.message || 'Resolution failed';
+      set({ error: message, loading: false });
+      return { success: false, message };
+    }
+  },
+
   // Fetch road health data
   fetchRoadHealth: async () => {
     set({ loading: true, error: null });

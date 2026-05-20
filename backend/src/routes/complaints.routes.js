@@ -7,7 +7,7 @@ const { authenticate, authorize, optionalAuth } = require('../middleware/auth');
 const upload   = require('../middleware/upload');
 const {
   createComplaint, listComplaints, getComplaint,
-  updateStatus, upvote, getStats,
+  updateStatus, upvote, getStats, resolveComplaint
 } = require('../controllers/complaints.controller');
 
 // Public
@@ -21,5 +21,6 @@ router.post('/:id/upvote', authenticate, upvote);
 
 // Authority/Admin only
 router.patch('/:id/status', authenticate, authorize('authority', 'admin'), updateStatus);
+router.post('/:id/resolve', authenticate, authorize('authority', 'admin'), upload.single('resolved_image'), resolveComplaint);
 
 module.exports = router;

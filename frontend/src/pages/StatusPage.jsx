@@ -84,10 +84,21 @@ export default function StatusPage() {
                 </div>
                 <div className="card-body">
                   <h2 style={{marginBottom:'var(--space-4)'}}>{currentComplaint.title}</h2>
-                  {currentComplaint.images?.[0] && (
-                    <img src={currentComplaint.images[0].url} alt="" className="status-page__detail-img" />
-                  )}
-                  {currentComplaint.description && <p>{currentComplaint.description}</p>}
+                  <div style={{display:'flex', gap:'1rem', overflowX:'auto'}}>
+                    {currentComplaint.images?.[0] && (
+                      <div style={{flex:1}}>
+                        <p className="text-sm text-muted mb-2">Reported Issue</p>
+                        <img src={currentComplaint.images[0].url} alt="Reported" className="status-page__detail-img" />
+                      </div>
+                    )}
+                    {currentComplaint.resolved_image_url && (
+                      <div style={{flex:1}}>
+                        <p className="text-sm text-success mb-2" style={{color:'var(--success)', fontWeight:'bold'}}>Resolution Proof</p>
+                        <img src={currentComplaint.resolved_image_url} alt="Resolved" className="status-page__detail-img" style={{border: '3px solid var(--success)'}} />
+                      </div>
+                    )}
+                  </div>
+                  {currentComplaint.description && <p style={{marginTop:'1rem'}}>{currentComplaint.description}</p>}
                   <div className="status-page__detail-meta">
                     <div><span className="text-muted text-sm">Issue Type</span><br /><strong style={{textTransform:'capitalize'}}>{currentComplaint.issue_type?.replace('_',' ')}</strong></div>
                     <div><span className="text-muted text-sm">Location</span><br /><strong>{currentComplaint.address_text || `${parseFloat(currentComplaint.latitude).toFixed(4)}, ${parseFloat(currentComplaint.longitude).toFixed(4)}`}</strong></div>

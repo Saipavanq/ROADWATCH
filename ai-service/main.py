@@ -7,12 +7,22 @@ Can be swapped with a real PyTorch/TensorFlow model
 import os
 import random
 import time
+import logging
 from pathlib import Path
 from typing import Optional
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+
+# ── Logging Configuration ─────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s - %(message)s",
+)
+logger = logging.getLogger("ai_service")
+
 
 # ── FastAPI App ───────────────────────────────────────────────
 app = FastAPI(
@@ -28,6 +38,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={"message": "Internal Server Error", "details": str(exc)},
+    )
+
 
 # ── Pydantic Models ───────────────────────────────────────────
 class AnalyzeRequest(BaseModel):
@@ -142,6 +161,8 @@ def analyze_image(request: AnalyzeRequest):
     notes = random.choice(NOTES_MAP[issue_type])
 
     processing_time_ms = int((time.time() - start) * 1000)
+
+    logger.info(f"Analyzed {request.image_path} -> {issue_type} ({severity}) in {processing_time_ms}ms")
 
     return AnalysisResult(
         issue_type=issue_type,

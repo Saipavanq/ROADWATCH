@@ -5,7 +5,7 @@
 
 -- Extensions
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
--- CREATE EXTENSION IF NOT EXISTS "postgis"; -- For geo queries (optional, can comment out)
+-- CREATE EXTENSION IF NOT EXISTS "postgis"; -- For geo queries
 
 -- ============================================================
 -- 1. USERS & AUTH (Module 1, 25)
@@ -111,6 +111,7 @@ CREATE TABLE complaints (
   
   -- Status (Module 15)
   status          complaint_status DEFAULT 'submitted',
+  resolved_image_url TEXT,
   
   -- Duplicate detection (Module 9)
   is_duplicate    BOOLEAN DEFAULT FALSE,

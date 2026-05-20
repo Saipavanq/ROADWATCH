@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { MapPin, Bell, User, Menu, X, LogOut, ChevronDown, Zap } from 'lucide-react';
+import { MapPin, Bell, User, Menu, X, LogOut, ChevronDown, Zap, Settings } from 'lucide-react';
 import useAuthStore from '../store/authStore';
 import NotificationTray from './NotificationTray';
 import './Navbar.css';
@@ -85,6 +85,9 @@ export default function Navbar() {
                       <span className={`badge badge-${user?.role || 'citizen'} text-xs`}>{user?.role}</span>
                     </div>
                     <div className="navbar__dropdown-divider" />
+                    <Link to="/settings" className="navbar__dropdown-item" onClick={() => setUserMenu(false)}>
+                      <Settings size={14} /> Settings
+                    </Link>
                     <button className="navbar__dropdown-item" onClick={handleLogout}>
                       <LogOut size={14} /> Sign out
                     </button>

@@ -3,6 +3,7 @@ import Navbar        from './components/Navbar';
 import LoginPage     from './pages/LoginPage';
 import AuthorityPage from './pages/AuthorityPage';
 import useAuthStore  from './store/authStore';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Protected route wrapper
 function Protected({ children }) {
@@ -18,18 +19,20 @@ function Home() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/"          element={<Home />} />
-        <Route path="/login"     element={<LoginPage />} />
-        {/* Auth-gated routes removed */}
+      <ErrorBoundary>
+        <Navbar />
+        <Routes>
+          <Route path="/"          element={<Home />} />
+          <Route path="/login"     element={<LoginPage />} />
+          {/* Auth-gated routes removed */}
 
-        {/* Authority / Admin dashboard */}
-        <Route path="/authority" element={<Protected><AuthorityPage /></Protected>} />
+          {/* Authority / Admin dashboard */}
+          <Route path="/authority" element={<Protected><AuthorityPage /></Protected>} />
 
-        {/* 404 fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* 404 fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

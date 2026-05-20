@@ -5,8 +5,10 @@
 const { v4: uuidv4 } = require('uuid');
 const axios  = require('axios').default;
 const path   = require('path');
+const asyncHandler = require('express-async-handler');
 const { query } = require('../models/db');
 const { routeComplaint } = require('../services/routing.service');
+const logger = require('../utils/logger');
 
 // Generate reference number: RW-YYYY-NNNNN
 const generateRefNo = async () => {
@@ -16,7 +18,7 @@ const generateRefNo = async () => {
   return `RW-${year}-${seq}`;
 };
 
-// Check for duplicates within 50m radius
+// Check for duplicates within 50m radius using approx math
 const checkDuplicate = async (lat, lng, issueType) => {
   const { rows } = await query(
     `SELECT id, reference_no FROM complaints
@@ -41,8 +43,7 @@ const findAuthorityArea = async (lat, lng) => {
 };
 
 // ── Create Complaint ──────────────────────────────────────────
-exports.createComplaint = async (req, res, next) => {
-  try {
+exports.createComplaint = asyncHandler(async (req, res, next) => {
     const userId = req.user?.id;
     const {
       latitude, longitude, address_text,
@@ -115,8 +116,7 @@ exports.createComplaint = async (req, res, next) => {
       message: 'Complaint submitted successfully',
       data: { complaint: { ...complaint }, referenceNo },
     });
-  } catch (err) { next(err); }
-};
+});
 
 // ── Background AI Analysis ────────────────────────────────────
 const triggerAIAnalysis = async (complaintId, filename) => {
@@ -141,8 +141,7 @@ const triggerAIAnalysis = async (complaintId, filename) => {
 };
 
 // ── List Complaints ───────────────────────────────────────────
-exports.listComplaints = async (req, res, next) => {
-  try {
+exports.listComplaints = asyncHandler(async (req, res, next) => {
     const {
       status, severity, issue_type,
       page = 1, limit = 20,
@@ -187,12 +186,10 @@ exports.listComplaints = async (req, res, next) => {
       success: true,
       data: { complaints: rows, pagination: { total, page: parseInt(page), limit: parseInt(limit), pages: Math.ceil(total / parseInt(limit)) } },
     });
-  } catch (err) { next(err); }
-};
+});
 
 // ── Get Complaint by ID ───────────────────────────────────────
-exports.getComplaint = async (req, res, next) => {
-  try {
+exports.getComplaint = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const { rows } = await query(
       `SELECT c.*,
@@ -221,12 +218,10 @@ exports.getComplaint = async (req, res, next) => {
     );
 
     res.json({ success: true, data: { complaint: { ...complaint, images: images.rows, statusHistory: history.rows } } });
-  } catch (err) { next(err); }
-};
+});
 
 // ── Update Status ─────────────────────────────────────────────
-exports.updateStatus = async (req, res, next) => {
-  try {
+exports.updateStatus = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const { status, notes } = req.body;
 
@@ -251,12 +246,43 @@ exports.updateStatus = async (req, res, next) => {
     if (io) io.to(`complaint_${id}`).emit('status_updated', { id, status, notes });
 
     res.json({ success: true, message: 'Status updated', data: { id, oldStatus, newStatus: status } });
-  } catch (err) { next(err); }
-};
+});
+
+// ── Resolve Complaint ───────────────────────────────────────────
+exports.resolveComplaint = asyncHandler(async (req, res, next) => {
+    const { id } = req.params;
+    const { notes } = req.body;
+    
+    let resolvedImageUrl = null;
+    if (req.file) {
+      resolvedImageUrl = `/uploads/complaints/${req.file.filename}`;
+    }
+
+    const current = await query('SELECT id, status FROM complaints WHERE id = $1', [id]);
+    if (!current.rows.length)
+      return res.status(404).json({ success: false, message: 'Complaint not found' });
+
+    const oldStatus = current.rows[0].status;
+
+    await query(
+      'UPDATE complaints SET status = $1, resolved_image_url = $2, updated_at = NOW() WHERE id = $3', 
+      ['resolved', resolvedImageUrl, id]
+    );
+
+    await query(
+      'INSERT INTO complaint_status_log (complaint_id, old_status, new_status, changed_by, notes) VALUES ($1,$2,$3,$4,$5)',
+      [id, oldStatus, 'resolved', req.user.id, notes || 'Resolved by authority']
+    );
+
+    // Notify citizen via socket
+    const io = req.app.get('io');
+    if (io) io.to(`complaint_${id}`).emit('status_updated', { id, status: 'resolved', notes });
+
+    res.json({ success: true, message: 'Complaint marked as resolved', data: { id, resolvedImageUrl } });
+});
 
 // ── Upvote ────────────────────────────────────────────────────
-exports.upvote = async (req, res, next) => {
-  try {
+exports.upvote = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const { rows } = await query(
       'UPDATE complaints SET upvotes = upvotes + 1 WHERE id = $1 RETURNING upvotes',
@@ -264,12 +290,10 @@ exports.upvote = async (req, res, next) => {
     );
     if (!rows.length) return res.status(404).json({ success: false, message: 'Complaint not found' });
     res.json({ success: true, data: { upvotes: rows[0].upvotes } });
-  } catch (err) { next(err); }
-};
+});
 
 // ── Dashboard Statistics ──────────────────────────────────────
-exports.getStats = async (req, res, next) => {
-  try {
+exports.getStats = asyncHandler(async (req, res, next) => {
     const stats = await query(`
       SELECT
         COUNT(*) FILTER (WHERE status = 'submitted')     AS submitted,
@@ -286,6 +310,18 @@ exports.getStats = async (req, res, next) => {
       FROM complaints GROUP BY issue_type ORDER BY count DESC
     `);
 
-    res.json({ success: true, data: { overview: stats.rows[0], byType: byType.rows } });
-  } catch (err) { next(err); }
-};
+    const weeklyActivity = await query(`
+      SELECT 
+        DATE(created_at) as date,
+        to_char(created_at, 'Dy') AS name,
+        COUNT(*) AS reported,
+        COUNT(*) FILTER (WHERE status = 'resolved') AS resolved
+      FROM complaints
+      WHERE created_at >= current_date - interval '6 days'
+      GROUP BY DATE(created_at), to_char(created_at, 'Dy')
+      ORDER BY DATE(created_at) ASC
+    `);
+
+    res.json({ success: true, data: { overview: stats.rows[0], byType: byType.rows, weeklyActivity: weeklyActivity.rows } });
+});
+

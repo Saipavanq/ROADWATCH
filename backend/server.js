@@ -10,6 +10,7 @@ const morgan     = require('morgan');
 const path       = require('path');
 const { Server } = require('socket.io');
 const rateLimit  = require('express-rate-limit');
+const logger     = require('./src/utils/logger');
 
 const authRoutes       = require('./src/routes/auth.routes');
 const complaintsRoutes = require('./src/routes/complaints.routes');
@@ -59,15 +60,15 @@ app.use('/api', limiter);
 
 // ── Socket.IO ────────────────────────────────────────────────
 io.on('connection', (socket) => {
-  console.log(`🔌 Client connected: ${socket.id}`);
+  logger.info(`🔌 Client connected: ${socket.id}`);
 
   socket.on('join_room', (room) => {
     socket.join(room);
-    console.log(`📦 ${socket.id} joined room: ${room}`);
+    logger.info(`📦 ${socket.id} joined room: ${room}`);
   });
 
   socket.on('disconnect', () => {
-    console.log(`🔌 Client disconnected: ${socket.id}`);
+    logger.info(`🔌 Client disconnected: ${socket.id}`);
   });
 });
 
@@ -95,7 +96,7 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error('❌ Error details:', err); // Log full error object
+  logger.error('❌ Error details:', err); // Log full error object
   res.status(err.status || 500).json({
     success: false,
     message: err.message || 'Internal server error',
@@ -108,14 +109,14 @@ app.use((err, req, res, next) => {
 const ESCALATION_INTERVAL_MS = 60 * 60 * 1000; // 1 hour
 setInterval(async () => {
   const count = await autoEscalateStalledComplaints();
-  if (count) console.log(`⚡ Auto-escalated ${count} complaint(s)`);
+  if (count) logger.info(`⚡ Auto-escalated ${count} complaint(s)`);
 }, ESCALATION_INTERVAL_MS);
 
 // ── Start ─────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`\n🛣️  RoadWatch API running on http://localhost:${PORT}`);
-  console.log(`📡  Socket.IO ready`);
-  console.log(`🌍  Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`⚡  Auto-escalation scheduler: every 1 hour\n`);
+  logger.info(`\n🛣️  RoadWatch API running on http://localhost:${PORT}`);
+  logger.info(`📡  Socket.IO ready`);
+  logger.info(`🌍  Environment: ${process.env.NODE_ENV || 'development'}`);
+  logger.info(`⚡  Auto-escalation scheduler: every 1 hour\n`);
 });

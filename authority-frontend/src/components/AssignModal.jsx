@@ -1,7 +1,7 @@
 // ============================================================
 // AssignModal.jsx — Phase 2
-// Modal for assigning or escalating a complaint.
-// Mode: 'assign' | 'escalate'
+// Modal for assigning, escalating, or resolving a complaint.
+// Mode: 'assign' | 'escalate' | 'resolve'
 // ============================================================
 import { useState } from 'react';
 import useAuthorityStore from '../store/authorityStore';
@@ -30,7 +30,7 @@ const ESCALATE_REASONS = [
 ];
 
 export default function AssignModal({ complaint, mode = 'assign', onClose, onSuccess }) {
-  const { assignComplaint, escalateComplaint, loading } = useAuthorityStore();
+  const { assignComplaint, escalateComplaint, resolveComplaint, loading } = useAuthorityStore();
 
   const [activeMode, setActiveMode] = useState(mode);
   const [assignedTo, setAssignedTo]       = useState('');
@@ -40,6 +40,7 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
   const [customReason, setCustomReason]   = useState('');
   const [notes, setNotes]                 = useState('');
   const [error, setError]                 = useState('');
+  const [resolvedImage, setResolvedImage] = useState(null);
 
   const handleAssign = async () => {
     setError('');
@@ -69,6 +70,21 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
     else setError(result.message);
   };
 
+  const handleResolve = async () => {
+    setError('');
+    if (!resolvedImage) {
+      setError('Please upload a proof image of the resolved issue.');
+      return;
+    }
+    const fd = new FormData();
+    fd.append('resolved_image', resolvedImage);
+    if (notes) fd.append('notes', notes);
+    
+    const result = await resolveComplaint(complaint.id, fd);
+    if (result.success) onSuccess?.('Complaint marked as resolved!');
+    else setError(result.message);
+  };
+
   return (
     <div className="assign-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="assign-modal" role="dialog" aria-modal="true">
@@ -76,7 +92,7 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
         <div className="assign-modal-header">
           <div>
             <div className="assign-modal-title">
-              {activeMode === 'assign' ? '📋 Assign Complaint' : '⚡ Escalate Complaint'}
+              {activeMode === 'assign' ? '📋 Assign Complaint' : activeMode === 'escalate' ? '⚡ Escalate Complaint' : '✅ Resolve Complaint'}
             </div>
             <div className="assign-modal-subtitle">
               {complaint.reference_no} · {complaint.issue_type?.replace('_', ' ')}
@@ -98,6 +114,12 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
             onClick={() => { setActiveMode('escalate'); setError(''); }}
           >
             ⚡ Escalate
+          </button>
+          <button
+            className={`assign-mode-tab ${activeMode === 'resolve' ? 'active' : ''}`}
+            onClick={() => { setActiveMode('resolve'); setError(''); }}
+          >
+            ✅ Resolve
           </button>
         </div>
 
@@ -143,7 +165,7 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
                 />
               </div>
             </>
-          ) : (
+          ) : activeMode === 'escalate' ? (
             <>
               <div className="form-group">
                 <label>Escalation Reason</label>
@@ -165,7 +187,27 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
                 </div>
               )}
             </>
-          )}
+          ) : activeMode === 'resolve' ? (
+            <>
+              <div className="form-group">
+                <label>Resolution Proof (Required)</label>
+                <input 
+                  type="file" 
+                  accept="image/*"
+                  onChange={e => setResolvedImage(e.target.files[0])}
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <label>Resolution Notes (Optional)</label>
+                <textarea
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Details about the work done..."
+                />
+              </div>
+            </>
+          ) : null}
         </div>
 
         {/* Footer */}
@@ -175,9 +217,13 @@ export default function AssignModal({ complaint, mode = 'assign', onClose, onSuc
             <button className="btn-assign" onClick={handleAssign} disabled={loading}>
               {loading ? 'Assigning…' : '✓ Assign Complaint'}
             </button>
-          ) : (
+          ) : activeMode === 'escalate' ? (
             <button className="btn-escalate" onClick={handleEscalate} disabled={loading}>
               {loading ? 'Escalating…' : '⚡ Escalate Now'}
+            </button>
+          ) : (
+            <button className="btn-resolve" onClick={handleResolve} disabled={loading} style={{ background: 'var(--success)', color: '#fff', border: 'none', padding: '0.6rem 1.2rem', borderRadius: '0.5rem', cursor: 'pointer', fontWeight: 600 }}>
+              {loading ? 'Resolving…' : '✅ Mark Resolved'}
             </button>
           )}
         </div>

@@ -1,0 +1,50 @@
+.settings-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.border-danger {
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.danger-header h3 {
+  color: var(--danger, #EF4444);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.otp-verification-box {
+  background: var(--bg-elevated);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px dashed var(--border);
+  margin-top: 1rem;
+}
+
+.error-alert {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--danger, #EF4444);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.success-alert {
+  background-color: rgba(74, 222, 128, 0.1);
+  color: #4ADE80;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  border: 1px solid rgba(74, 222, 128, 0.2);
+}
+
+.btn-danger {
+  background-color: var(--danger, #EF4444);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #DC2626;
+  transform: translateY(-1px);
+}
