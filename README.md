@@ -36,3 +36,32 @@ RoadWatch is a comprehensive web platform for citizens to report road infrastruc
    pip install -r requirements.txt
    uvicorn main:app --port 8000
    ```
+
+## Production Deployment (Public Access)
+Use Docker Compose production mode to make the app publicly accessible.
+
+1. **Create production env file**
+   ```bash
+   cp /home/runner/work/ROADWATCH/ROADWATCH/.env.production.example /home/runner/work/ROADWATCH/ROADWATCH/.env.production
+   ```
+   Update all secrets and domain values in `/home/runner/work/ROADWATCH/ROADWATCH/.env.production`.
+
+2. **Build and run**
+   ```bash
+   cd /home/runner/work/ROADWATCH/ROADWATCH
+   docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
+   ```
+
+3. **Public endpoints**
+   - Citizen app: `http://<server-ip-or-domain>`
+   - Authority app: `http://<server-ip-or-domain>:8080`
+   - API health: `http://<server-ip-or-domain>/api/health` (proxied by frontend nginx)
+
+4. **Open firewall/security group ports**
+   - `80` (citizen app + `/api` proxy)
+   - `8080` (authority app)
+
+5. **Recommended hardening**
+   - Put both frontends behind a reverse proxy with HTTPS (Nginx/Caddy/Traefik).
+   - Restrict direct database access to private network only.
+   - Rotate `JWT_SECRET` and DB credentials.

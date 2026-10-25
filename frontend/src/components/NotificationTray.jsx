@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import { io } from 'socket.io-client';
 import useAuthStore from '../store/authStore';
 import './NotificationTray.css';
@@ -14,7 +14,11 @@ export default function NotificationTray() {
     if (!user) return;
     
     // Connect to backend sockets
-    const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:5000');
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const socketUrl =
+      import.meta.env.VITE_SOCKET_URL ||
+      (apiUrl ? apiUrl.replace(/\/api\/?$/, '') : undefined);
+    const socket = socketUrl ? io(socketUrl) : io();
     
     // Join a room specifically for this user if applicable, 
     // or listen to global broadcast for new complaints for authorities
