@@ -24,19 +24,25 @@ const { autoEscalateStalledComplaints } = require('./src/controllers/authority.c
 
 const app    = express();
 const server = http.createServer(app);
-const io     = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL || 'http://localhost:5173', methods: ['GET', 'POST'] },
-});
+const envOrigins = [process.env.CLIENT_URL, process.env.CLIENT_URLS]
+  .filter(Boolean)
+  .flatMap((value) => value.split(','))
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-// ── Middleware ──────────────────────────────────────────────
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 const allowedOrigins = [
   'http://localhost',
   'http://localhost:5173',
   'http://localhost:5174',
-  process.env.CLIENT_URL
+  ...envOrigins
 ].filter(Boolean);
 
+const io     = new Server(server, {
+  cors: { origin: allowedOrigins, methods: ['GET', 'POST'] },
+});
+
+// ── Middleware ──────────────────────────────────────────────
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({ 
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
